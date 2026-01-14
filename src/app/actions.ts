@@ -20,28 +20,18 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
     });
 
     if (!suggestionResult?.outfitSuggestion || !suggestionResult?.imageKeywords) {
+      // This will be caught by the catch block below
       throw new Error("AI did not return a valid suggestion or keywords.");
     }
     
-    // In a real scenario, you might want more robust image searching.
-    // For this MVP, we'll try to get an image, but have a fallback.
-    try {
-      const visualResult = await provideVisualInspiration({
-        keywords: `${params.style} style ${suggestionResult.imageKeywords}`,
-      });
+    const visualResult = await provideVisualInspiration({
+      keywords: `${params.style} style ${suggestionResult.imageKeywords}`,
+    });
 
-      return {
-        outfitSuggestion: suggestionResult.outfitSuggestion,
-        imageUrl: visualResult.imageUrl,
-      };
-
-    } catch (imageError) {
-      console.warn("Could not fetch visual inspiration, using a fallback image.", imageError);
-       return {
-        outfitSuggestion: suggestionResult.outfitSuggestion,
-        imageUrl: `https://picsum.photos/seed/${encodeURIComponent(suggestionResult.imageKeywords)}/600/800`,
-      };
-    }
+    return {
+      outfitSuggestion: suggestionResult.outfitSuggestion,
+      imageUrl: visualResult.imageUrl,
+    };
 
   } catch (error) {
     console.error("Error getting outfit suggestion:", error);
