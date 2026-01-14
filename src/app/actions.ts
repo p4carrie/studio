@@ -29,12 +29,10 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
       const visualResult = await provideVisualInspiration({
         keywords: `${params.style} style ${suggestionResult.imageKeywords}`,
       });
-      
-      const imageUrl = visualResult.imageUrl.startsWith('http') ? visualResult.imageUrl : `https://images.unsplash.com/search/photos?query=${encodeURIComponent(suggestionResult.imageKeywords)}`;
 
       return {
         outfitSuggestion: suggestionResult.outfitSuggestion,
-        imageUrl: imageUrl,
+        imageUrl: visualResult.imageUrl,
       };
 
     } catch (imageError) {

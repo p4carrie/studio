@@ -33,17 +33,6 @@ export async function provideVisualInspiration(
   return provideVisualInspirationFlow(input);
 }
 
-const provideVisualInspirationPrompt = ai.definePrompt({
-  name: 'provideVisualInspirationPrompt',
-  input: {schema: ProvideVisualInspirationInputSchema},
-  output: {schema: ProvideVisualInspirationOutputSchema},
-  prompt: `You are an AI assistant designed to find a single relevant style reference image URL, given keywords.
-
-  Return just the URL. Do not return markdown or any other text.
-
-  The keywords to use for the image search are: {{{keywords}}}`,
-});
-
 const provideVisualInspirationFlow = ai.defineFlow(
   {
     name: 'provideVisualInspirationFlow',
@@ -51,13 +40,10 @@ const provideVisualInspirationFlow = ai.defineFlow(
     outputSchema: ProvideVisualInspirationOutputSchema,
   },
   async input => {
-    const {output} = await ai.generate({
-      prompt: provideVisualInspirationPrompt,
-      model: 'googleai/multimodal-embedding',
-    });
-    if (!output) {
-      throw new Error('No image URL found.');
-    }
-    return {imageUrl: output.text};
+    // For this MVP, we are not using a sophisticated image search tool.
+    // We construct a URL that searches on Unsplash, a free image provider.
+    // In a real application, you might use a specific image search API for more control.
+    const imageUrl = `https://images.unsplash.com/search/photos?query=${encodeURIComponent(input.keywords)}`;
+    return { imageUrl };
   }
 );
