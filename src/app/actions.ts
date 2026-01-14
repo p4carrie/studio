@@ -19,13 +19,14 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
       contextPreference: [params.context],
     });
 
-    if (!suggestionResult?.outfitSuggestion || !suggestionResult?.imageKeywords) {
+    if (!suggestionResult?.outfitSuggestion) {
       // This will be caught by the catch block below
-      throw new Error("AI did not return a valid suggestion or keywords.");
+      throw new Error("AI did not return a valid suggestion.");
     }
     
+    // Use the outfit suggestion itself to find a visual
     const visualResult = await provideVisualInspiration({
-      keywords: `${params.style} style ${suggestionResult.imageKeywords}`,
+      keywords: `${params.style} style ${suggestionResult.outfitSuggestion}`,
     });
 
     return {

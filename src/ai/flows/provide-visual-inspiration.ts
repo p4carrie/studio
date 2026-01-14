@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Provides visual inspiration by fetching style examples from Google Images based on outfit keywords.
+ * @fileOverview Provides visual inspiration by fetching style examples from Unsplash.
  *
  * - provideVisualInspiration - A function that fetches style examples.
  * - ProvideVisualInspirationInput - The input type for the provideVisualInspiration function.
@@ -10,6 +10,11 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import * as unsplash from 'unsplash-js';
+
+const unsplashApi = unsplash.createApi({
+  accessKey: process.env.UNSPLASH_ACCESS_KEY || '',
+});
 
 const ProvideVisualInspirationInputSchema = z.object({
   keywords: z
@@ -40,10 +45,34 @@ const provideVisualInspirationFlow = ai.defineFlow(
     outputSchema: ProvideVisualInspirationOutputSchema,
   },
   async input => {
-    // For this MVP, we are not using a sophisticated image search tool.
-    // We construct a URL that searches on Unsplash, a free image provider.
-    // In a real application, you might use a specific image search API for more control.
-    const imageUrl = `https://images.unsplash.com/search/photos?query=${encodeURIComponent(input.keywords)}`;
-    return { imageUrl };
+    try {
+      const result = await unsplashApi.search.getPhotos({
+        query: input.keywords,
+        page: 1,
+        perPage: 1,
+        orientation: 'portrait',
+        contentFilter: 'high',
+      });
+
+      if (result.errors) {
+        console.error('Unsplash API error:', result.errors);
+        throw new Error('Failed to fetch image from Unsplash.');
+      }
+
+      const photo = result.response?.results[0];
+
+      if (!photo) {
+        // Fallback to a generic search if no specific results
+        return { imageUrl: `https://images.unsplash.com/search/photos?query=${encodeURIComponent('fashion ' + input.keywords)}` };
+      }
+      
+      // Use the 'regular' size for a good balance of quality and size
+      return { imageUrl: photo.urls.regular };
+
+    } catch (error) {
+      console.error('Error in provideVisualInspirationFlow:', error);
+      // Provide a fallback picsum URL in case of any error
+      return { imageUrl: `https://picsum.photos/seed/${input.keywords.replace(/\s+/g, '-')}/600/800` };
+    }
   }
 );

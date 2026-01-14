@@ -20,8 +20,7 @@ const GenerateOutfitSuggestionInputSchema = z.object({
 export type GenerateOutfitSuggestionInput = z.infer<typeof GenerateOutfitSuggestionInputSchema>;
 
 const GenerateOutfitSuggestionOutputSchema = z.object({
-  outfitSuggestion: z.string().describe('The outfit suggestion based on the input parameters.'),
-  imageKeywords: z.string().describe('A short, concise list of keywords to use for searching for a reference image. e.g., "white t-shirt, blue jeans"'),
+  outfitSuggestion: z.string().describe('The outfit suggestion in a single, concise sentence. For example: "A light blue linen shirt, beige chino shorts, and white sneakers."'),
 });
 export type GenerateOutfitSuggestionOutput = z.infer<typeof GenerateOutfitSuggestionOutputSchema>;
 
@@ -40,8 +39,10 @@ Temperature: {{{temperature}}}°C
 Style Preference: {{{stylePreference}}}
 Context Preference: {{{contextPreference}}}
 
-Provide a concise outfit suggestion.
-For image keywords, provide a short, concise list of keywords for a reference image search. For example: "white t-shirt, blue jeans" or "black dress, leather jacket".`,
+Provide a single, concise sentence describing a complete outfit.
+Example: "A light blue linen shirt, beige chino shorts, and white sneakers."
+Example: "A black wool coat, a grey turtleneck sweater, dark wash jeans, and leather boots."
+`,
 });
 
 const generateOutfitSuggestionFlow = ai.defineFlow(
