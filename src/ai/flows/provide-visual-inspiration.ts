@@ -46,6 +46,9 @@ const provideVisualInspirationFlow = ai.defineFlow(
   },
   async input => {
     try {
+      if (!process.env.UNSPLASH_ACCESS_KEY) {
+        throw new Error('Unsplash Access Key is not configured.');
+      }
       const result = await unsplashApi.search.getPhotos({
         query: input.keywords,
         page: 1,
@@ -71,8 +74,8 @@ const provideVisualInspirationFlow = ai.defineFlow(
 
     } catch (error) {
       console.error('Error in provideVisualInspirationFlow:', error);
-      // Provide a fallback picsum URL in case of any error
-      return { imageUrl: `https://picsum.photos/seed/${input.keywords.replace(/\s+/g, '-')}/600/800` };
+      // Let the caller handle the fallback.
+      throw new Error('Failed to get visual inspiration.');
     }
   }
 );

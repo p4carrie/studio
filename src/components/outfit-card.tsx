@@ -17,10 +17,14 @@ interface OutfitCardProps {
   preferences: UserPreferences;
 }
 
+const FALLBACK_IMAGE_URL = 'https://picsum.photos/seed/fallback-fashion/600/800';
+
 export default function OutfitCard({ forecast, preferences }: OutfitCardProps) {
   const [isPending, startTransition] = useTransition();
   const [currentOutfit, setCurrentOutfit] = useState(forecast.outfit);
   const [activeContext, setActiveContext] = useState(forecast.context);
+  const [imageError, setImageError] = useState(false);
+
 
   const userContexts = CONTEXT_OPTIONS.filter(option => preferences.contexts.includes(option.id));
 
@@ -28,6 +32,7 @@ export default function OutfitCard({ forecast, preferences }: OutfitCardProps) {
     if (newContext === activeContext) return;
 
     setActiveContext(newContext);
+    setImageError(false);
     startTransition(async () => {
       const result = await getOutfitForContext({
         weather: forecast.weather,
@@ -45,6 +50,9 @@ export default function OutfitCard({ forecast, preferences }: OutfitCardProps) {
       setCurrentOutfit(result);
     });
   };
+
+  const currentImageUrl = imageError ? FALLBACK_IMAGE_URL : currentOutfit.imageUrl;
+
 
   return (
     <Card className="w-full overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -83,12 +91,13 @@ export default function OutfitCard({ forecast, preferences }: OutfitCardProps) {
                 <div className="animate-in fade-in duration-500">
                   <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md mb-4">
                      <Image
-                      src={currentOutfit.imageUrl}
+                      src={currentImageUrl}
                       alt={`Style reference for ${currentOutfit.outfitSuggestion}`}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       data-ai-hint="fashion style"
+                      onError={() => setImageError(true)}
                     />
                   </div>
                   <p className="text-lg font-medium leading-relaxed">{currentOutfit.outfitSuggestion}</p>

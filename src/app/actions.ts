@@ -37,7 +37,8 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
     console.error("Error getting outfit suggestion, providing fallback:", error);
     // Return a default/error state
     const fallbackSuggestion = "一件舒適的T恤、牛仔褲和您最喜歡的運動鞋，打造經典造型。";
-    const fallbackImageUrl = `https://images.unsplash.com/search/photos?query=${encodeURIComponent('t-shirt jeans sneakers')}`;
+    const fallbackKeywords = 't-shirt-jeans-sneakers';
+    const fallbackImageUrl = `https://picsum.photos/seed/${fallbackKeywords}/600/800`;
 
     return {
       outfitSuggestion: fallbackSuggestion,
