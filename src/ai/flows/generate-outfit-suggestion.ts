@@ -20,7 +20,7 @@ const GenerateOutfitSuggestionInputSchema = z.object({
 export type GenerateOutfitSuggestionInput = z.infer<typeof GenerateOutfitSuggestionInputSchema>;
 
 const GenerateOutfitSuggestionOutputSchema = z.object({
-  outfitSuggestion: z.string().describe('The outfit suggestion in a single, concise sentence. For example: "A light blue linen shirt, beige chino shorts, and white sneakers."'),
+  outfitSuggestion: z.string().describe('A single, concise sentence for an outfit. For example: "A light blue linen shirt, beige chino shorts, and white sneakers."'),
 });
 export type GenerateOutfitSuggestionOutput = z.infer<typeof GenerateOutfitSuggestionOutputSchema>;
 
@@ -32,12 +32,12 @@ const prompt = ai.definePrompt({
   name: 'generateOutfitSuggestionPrompt',
   input: {schema: GenerateOutfitSuggestionInputSchema},
   output: {schema: GenerateOutfitSuggestionOutputSchema},
-  prompt: `You are a personal stylist. Given the weather conditions, temperature, user style preferences, and context, suggest an appropriate outfit.
+  prompt: `You are a personal stylist. Given the weather, temperature, style, and context, suggest an outfit.
 
-Weather Condition: {{{weatherCondition}}}
+Weather: {{{weatherCondition}}}
 Temperature: {{{temperature}}}°C
-Style Preference: {{{stylePreference}}}
-Context Preference: {{{contextPreference}}}
+Style: {{{stylePreference}}}
+Context: {{{contextPreference}}}
 
 Provide a single, concise sentence describing a complete outfit.
 Example: "A light blue linen shirt, beige chino shorts, and white sneakers."

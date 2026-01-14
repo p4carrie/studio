@@ -19,8 +19,7 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
       contextPreference: [params.context],
     });
 
-    if (!suggestionResult?.outfitSuggestion) {
-      // This will be caught by the catch block below
+    if (!suggestionResult?.outfitSuggestion || suggestionResult.outfitSuggestion.trim() === '') {
       throw new Error("AI did not return a valid suggestion.");
     }
     
@@ -35,11 +34,14 @@ export async function getOutfitForContext(params: GetOutfitForContextParams): Pr
     };
 
   } catch (error) {
-    console.error("Error getting outfit suggestion:", error);
+    console.error("Error getting outfit suggestion, providing fallback:", error);
     // Return a default/error state
+    const fallbackSuggestion = "一件舒適的T恤、牛仔褲和您最喜歡的運動鞋，打造經典造型。";
+    const fallbackImageUrl = `https://images.unsplash.com/search/photos?query=${encodeURIComponent('t-shirt jeans sneakers')}`;
+
     return {
-      outfitSuggestion: "抱歉，無法生成建議。請稍後再試。",
-      imageUrl: `https://picsum.photos/seed/error/600/800`,
+      outfitSuggestion: fallbackSuggestion,
+      imageUrl: fallbackImageUrl,
     };
   }
 }
